@@ -39,18 +39,24 @@ export function generateWhatsAppMessage(items: CartItem[], note: string): string
   return message
 }
 
+/**
+ * wa.me solo acepta digitos: descarta el "+", espacios y guiones que
+ * pueda traer VITE_WHATSAPP_NUMBER.
+ */
+function whatsappNumber(): string {
+  return (import.meta.env.VITE_WHATSAPP_NUMBER ?? '').replace(/\D/g, '')
+}
+
 export function buildWhatsAppUrl(items: CartItem[], note: string): string {
   const message = generateWhatsAppMessage(items, note)
   const encoded = encodeURIComponent(message)
-  const number = import.meta.env.VITE_WHATSAPP_NUMBER ?? ''
-  return `https://wa.me/${number}?text=${encoded}`
+  return `https://wa.me/${whatsappNumber()}?text=${encoded}`
 }
 
 export function buildWhatsAppConsultUrl(text?: string): string {
   const message = text ?? '¡Hola! Quiero consultar sobre fundas personalizadas.'
   const encoded = encodeURIComponent(message)
-  const number = import.meta.env.VITE_WHATSAPP_NUMBER ?? ''
-  return `https://wa.me/${number}?text=${encoded}`
+  return `https://wa.me/${whatsappNumber()}?text=${encoded}`
 }
 
 /** Mensaje del CTA principal de /personalizar. */
