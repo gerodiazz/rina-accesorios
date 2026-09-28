@@ -57,6 +57,34 @@ export async function getProductBySlug(slug: string): Promise<ProductWithRelatio
   }
 }
 
+export async function getProductById(id: string): Promise<ProductWithRelations | null> {
+  if (!supabaseConfigured) return null
+
+  const { data: product, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle()
+
+  if (error || !product) {
+    if (error) console.error('Error fetching product:', error)
+    return null
+  }
+
+  const { data: images } = await supabase
+    .from('product_images')
+    .select('*')
+    .eq('product_id', product.id)
+    .order('order_index')
+
+  return {
+    ...product,
+    category: null,
+    images: images ?? [],
+    phone_models: []
+  }
+}
+
 export async function getProductsByCategory(categoryId: string): Promise<ProductWithRelations[]> {
   if (!supabaseConfigured) return []
 
@@ -181,7 +209,7 @@ export async function addProductImage(productId: string, url: string, alt?: stri
     .eq('product_id', productId)
     .order('order_index', { ascending: false })
     .limit(1)
-    .single()
+    .maybeSingle()
 
   const nextOrder = (existing?.order_index ?? -1) + 1
 
