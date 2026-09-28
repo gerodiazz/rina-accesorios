@@ -1,0 +1,38 @@
+:root {
+  /* Colors */
+  --color-bg: #FAFAF8;
+  --color-surface: #F2F0EC;
+  --color-ink: #1A1A1A;
+  --color-ink-muted: #6B6B6B;
+  --color-accent: #C9A96E;
+  --color-accent-dark: #A8813F;
+  --color-blush: #F0DDD5;
+  --color-blush-deep: #E8C4B4;
+  --color-border: #E5E2DC;
+  --color-white: #FFFFFF;
+  --color-gold: #C9A96E;
+
+  /* Typography scale */
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  2rem;
+  --text-4xl:  2.75rem;
+  --text-5xl:  4rem;
+  --text-6xl:  5.5rem;
+
+  /* Border radius */
+  --radius-sm:   6px;
+  --radius-md:   12px;
+  --radius-lg:   20px;
+  --radius-xl:   32px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-card:  0 2px 20px rgba(0,0,0,0.06);
+  --shadow-hover: 0 8px 40px rgba(0,0,0,0.12);
+  --shadow-modal: 0 24px 80px rgba(0,0,0,0.2);
+}

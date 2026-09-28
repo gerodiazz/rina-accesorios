@@ -1,0 +1,96 @@
+@import './tokens.css';
+@import './animations.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--color-blush-deep);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 font-sans font-medium text-white rounded-full px-7 py-3.5 transition-all duration-200;
+    background-color: var(--color-accent);
+    min-height: 48px;
+  }
+  .btn-primary:hover {
+    background-color: var(--color-accent-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201, 169, 110, 0.4);
+  }
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 font-sans font-medium rounded-full px-7 py-3.5 transition-all duration-200;
+    border: 1.5px solid var(--color-ink);
+    color: var(--color-ink);
+    background: transparent;
+    min-height: 48px;
+  }
+  .btn-secondary:hover {
+    background-color: var(--color-ink);
+    color: var(--color-white);
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 font-sans font-medium rounded-full px-7 py-3.5 transition-all duration-200;
+    color: var(--color-ink);
+    background: transparent;
+    min-height: 48px;
+  }
+  .btn-ghost:hover {
+    background-color: var(--color-surface);
+  }
+
+  .section-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: var(--text-xs);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: clamp(1.75rem, 5vw, 2rem);
+    color: var(--color-ink);
+    line-height: 1.15;
+  }
+
+  .card {
+    background-color: var(--color-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    transition: transform 280ms ease, box-shadow 280ms ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+  }
+}
