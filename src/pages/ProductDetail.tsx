@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { useProduct, useProducts } from '../hooks/useProducts'
 import { usePhoneModels } from '../hooks/usePhoneModels'
 import { useCartStore } from '../store/cart'
-import { buildWhatsAppConsultUrl } from '../utils/whatsapp'
+import { buildWhatsAppConsultUrl, CUSTOMIZE_MESSAGE } from '../utils/whatsapp'
 import { Badge } from '../components/ui/Badge'
 import { ProductCard } from '../components/catalog/ProductCard'
 import type { Product as LocalProduct } from '../data/products'
@@ -277,9 +277,14 @@ export default function ProductDetail() {
 
             <p className="font-sans text-sm mt-8" style={{ color: 'var(--color-ink-muted)' }}>
               ¿Querés esta idea pero con tu toque?{' '}
-              <Link to="/personalizar" className="underline hover:text-accent">
+              <a
+                href={buildWhatsAppConsultUrl(CUSTOMIZE_MESSAGE)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-accent"
+              >
                 Personalizala
-              </Link>
+              </a>
               .
             </p>
           </div>

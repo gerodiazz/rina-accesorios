@@ -52,3 +52,9 @@ export function buildWhatsAppConsultUrl(text?: string): string {
   const number = import.meta.env.VITE_WHATSAPP_NUMBER ?? ''
   return `https://wa.me/${number}?text=${encoded}`
 }
+
+/** Mensaje del CTA principal de /personalizar. */
+export const CUSTOM_CASE_MESSAGE = 'Hola! Quiero hacer una funda personalizada 🎨 ¿Me podés ayudar?'
+
+/** Mensaje de los botones "personalizar" repartidos por el sitio. */
+export const CUSTOMIZE_MESSAGE = 'Hola! Quiero personalizar una funda 🎨 ¿Me podés ayudar?'
