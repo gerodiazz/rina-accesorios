@@ -18,7 +18,7 @@ export function ProductCard({ product }: ProductCardProps) {
     <>
       <div className="relative overflow-hidden" style={{ aspectRatio: '3/4' }}>
         <img
-          src={`https://picsum.photos/seed/${product.id}/480/640`}
+          src={product.images[0] || `https://picsum.photos/seed/${product.id}/480/640`}
           alt={product.name}
           width={480}
           height={640}
