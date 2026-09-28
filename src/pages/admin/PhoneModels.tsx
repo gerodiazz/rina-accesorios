@@ -8,32 +8,49 @@ export default function AdminPhoneModels() {
   const [newBrand, setNewBrand] = useState<'Apple' | 'Samsung' | 'Motorola' | 'Xiaomi'>('Apple')
   const [newName, setNewName] = useState('')
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [expandedBrand, setExpandedBrand] = useState<string | null>('Apple')
 
   const brands = ['Apple', 'Samsung', 'Motorola', 'Xiaomi'] as const
 
   const handleToggleActive = async (id: string, currentActive: boolean) => {
-    await togglePhoneModelActive(id, !currentActive)
+    setError(null)
+    const ok = await togglePhoneModelActive(id, !currentActive)
+    if (!ok) {
+      setError('No se pudo cambiar el estado del modelo.')
+      return
+    }
     refetch()
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('¿Eliminar este modelo?')) return
-    await deletePhoneModel(id)
+    setError(null)
+    const ok = await deletePhoneModel(id)
+    if (!ok) {
+      setError('No se pudo eliminar el modelo. Puede estar asociado a productos.')
+      return
+    }
     refetch()
   }
 
   const handleCreateNew = async () => {
     if (!newName.trim()) return
     setSaving(true)
+    setError(null)
     const slug = newName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
-    await createPhoneModel({
+    const created = await createPhoneModel({
       brand: newBrand,
       name: newName,
       slug,
       active: true,
       order_index: (modelsByBrand[newBrand]?.length ?? 0)
     })
+    if (!created) {
+      setError('No se pudo crear el modelo. Puede que ya exista.')
+      setSaving(false)
+      return
+    }
     setShowNew(false)
     setNewName('')
     setSaving(false)
@@ -58,6 +75,12 @@ export default function AdminPhoneModels() {
           + Nuevo modelo
         </button>
       </div>
+
+      {error && (
+        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg font-sans text-sm mb-6">
+          {error}
+        </div>
+      )}
 
       {showNew && (
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">

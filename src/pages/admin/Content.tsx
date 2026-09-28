@@ -81,6 +81,7 @@ export default function AdminContent() {
   const [expandedGroup, setExpandedGroup] = useState<string | null>('Hero')
   const [saving, setSaving] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     setLocalContent(content)
@@ -93,12 +94,19 @@ export default function AdminContent() {
 
   const handleSave = async () => {
     setSaving(true)
+    setError(null)
     const updates = Object.entries(localContent)
       .filter(([key, value]) => content[key] !== value)
       .map(([key, value]) => ({ key, value }))
 
     if (updates.length > 0) {
-      await updateBatch(updates)
+      const ok = await updateBatch(updates)
+      if (!ok) {
+        // No limpiamos hasChanges: los cambios siguen pendientes de guardar.
+        setError('No se pudieron guardar los cambios. Revisá tu conexión y volvé a intentar.')
+        setSaving(false)
+        return
+      }
       await refetch()
     }
     setSaving(false)
@@ -147,6 +155,12 @@ export default function AdminContent() {
           </div>
         )}
       </div>
+
+      {error && (
+        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg font-sans text-sm mb-6">
+          {error}
+        </div>
+      )}
 
       <div className="space-y-4">
         {contentGroups.map(group => {

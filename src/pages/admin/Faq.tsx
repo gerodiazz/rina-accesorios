@@ -12,6 +12,7 @@ export default function AdminFaq() {
   const [newQuestion, setNewQuestion] = useState('')
   const [newAnswer, setNewAnswer] = useState('')
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleEdit = (item: typeof faqItems[0]) => {
     setEditing(item.id)
@@ -22,32 +23,54 @@ export default function AdminFaq() {
   const handleSaveEdit = async () => {
     if (!editing) return
     setSaving(true)
-    await updateFaqItem(editing, { question: editQuestion, answer: editAnswer })
+    setError(null)
+    const updated = await updateFaqItem(editing, { question: editQuestion, answer: editAnswer })
+    if (!updated) {
+      setError('No se pudo guardar la pregunta. Revisá tu conexión y volvé a intentar.')
+      setSaving(false)
+      return
+    }
     setEditing(null)
     setSaving(false)
     refetch()
   }
 
   const handleToggleActive = async (id: string, currentActive: boolean) => {
-    await toggleFaqItemActive(id, !currentActive)
+    setError(null)
+    const updated = await toggleFaqItemActive(id, !currentActive)
+    if (!updated) {
+      setError('No se pudo cambiar el estado de la pregunta.')
+      return
+    }
     refetch()
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('¿Eliminar esta pregunta?')) return
-    await deleteFaqItem(id)
+    setError(null)
+    const ok = await deleteFaqItem(id)
+    if (!ok) {
+      setError('No se pudo eliminar la pregunta.')
+      return
+    }
     refetch()
   }
 
   const handleCreateNew = async () => {
     if (!newQuestion.trim() || !newAnswer.trim()) return
     setSaving(true)
-    await createFaqItem({
+    setError(null)
+    const created = await createFaqItem({
       question: newQuestion,
       answer: newAnswer,
       order_index: faqItems.length,
       active: true
     })
+    if (!created) {
+      setError('No se pudo crear la pregunta.')
+      setSaving(false)
+      return
+    }
     setShowNew(false)
     setNewQuestion('')
     setNewAnswer('')
@@ -77,6 +100,12 @@ export default function AdminFaq() {
           + Nueva pregunta
         </button>
       </div>
+
+      {error && (
+        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg font-sans text-sm mb-6">
+          {error}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Editor */}

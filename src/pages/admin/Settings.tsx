@@ -14,6 +14,7 @@ export default function AdminSettings() {
   const [localSettings, setLocalSettings] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const settings: Record<string, string> = {}
@@ -30,12 +31,19 @@ export default function AdminSettings() {
 
   const handleSave = async () => {
     setSaving(true)
+    setError(null)
     const updates = Object.entries(localSettings)
       .filter(([key, value]) => content[key] !== value)
       .map(([key, value]) => ({ key, value }))
 
     if (updates.length > 0) {
-      await updateBatch(updates)
+      const ok = await updateBatch(updates)
+      if (!ok) {
+        // No marcamos "guardado": el cambio no llego a la base.
+        setError('No se pudieron guardar los ajustes. Revisá tu conexión y volvé a intentar.')
+        setSaving(false)
+        return
+      }
       await refetch()
     }
     setSaving(false)
@@ -61,6 +69,12 @@ export default function AdminSettings() {
           Datos de contacto y configuración general del sitio
         </p>
       </div>
+
+      {error && (
+        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg font-sans text-sm mb-6 max-w-2xl">
+          {error}
+        </div>
+      )}
 
       <div className="max-w-2xl">
         <div className="bg-white rounded-xl shadow-sm p-6 space-y-6">

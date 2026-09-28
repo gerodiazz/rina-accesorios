@@ -8,6 +8,7 @@ export default function AdminProducts() {
   const { products, refetch } = useProducts()
   const { categories } = useCategories()
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const getCategoryName = (categoryId: string | null) => {
     if (!categoryId) return '—'
@@ -16,20 +17,35 @@ export default function AdminProducts() {
   }
 
   const handleToggleActive = async (id: string, currentActive: boolean) => {
-    await updateProduct(id, { active: !currentActive })
+    setError(null)
+    const updated = await updateProduct(id, { active: !currentActive })
+    if (!updated) {
+      setError('No se pudo cambiar la visibilidad del producto.')
+      return
+    }
     refetch()
   }
 
   const handleToggleFeatured = async (id: string, currentFeatured: boolean) => {
-    await updateProduct(id, { featured: !currentFeatured })
+    setError(null)
+    const updated = await updateProduct(id, { featured: !currentFeatured })
+    if (!updated) {
+      setError('No se pudo cambiar el destacado del producto.')
+      return
+    }
     refetch()
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('¿Eliminar este producto?')) return
     setDeleting(id)
-    await deleteProduct(id)
+    setError(null)
+    const ok = await deleteProduct(id)
     setDeleting(null)
+    if (!ok) {
+      setError('No se pudo eliminar el producto.')
+      return
+    }
     refetch()
   }
 
@@ -51,6 +67,12 @@ export default function AdminProducts() {
           + Nuevo producto
         </Link>
       </div>
+
+      {error && (
+        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg font-sans text-sm mb-6">
+          {error}
+        </div>
+      )}
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <table className="w-full">

@@ -11,6 +11,7 @@ export default function AdminCategories() {
   const [newName, setNewName] = useState('')
   const [newDesc, setNewDesc] = useState('')
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleEdit = (cat: typeof categories[0]) => {
     setEditing(cat.id)
@@ -21,34 +22,56 @@ export default function AdminCategories() {
   const handleSaveEdit = async () => {
     if (!editing) return
     setSaving(true)
-    await updateCategory(editing, { name: editName, description: editDesc })
+    setError(null)
+    const updated = await updateCategory(editing, { name: editName, description: editDesc })
+    if (!updated) {
+      setError('No se pudo guardar la categoría. Revisá tu conexión y volvé a intentar.')
+      setSaving(false)
+      return
+    }
     setEditing(null)
     setSaving(false)
     refetch()
   }
 
   const handleToggleActive = async (id: string, currentActive: boolean) => {
-    await updateCategory(id, { active: !currentActive })
+    setError(null)
+    const updated = await updateCategory(id, { active: !currentActive })
+    if (!updated) {
+      setError('No se pudo cambiar el estado de la categoría.')
+      return
+    }
     refetch()
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('¿Eliminar esta categoría?')) return
-    await deleteCategory(id)
+    setError(null)
+    const ok = await deleteCategory(id)
+    if (!ok) {
+      setError('No se pudo eliminar la categoría. Puede tener productos asociados.')
+      return
+    }
     refetch()
   }
 
   const handleCreateNew = async () => {
     if (!newName.trim()) return
     setSaving(true)
+    setError(null)
     const slug = newName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
-    await createCategory({
+    const created = await createCategory({
       name: newName,
       slug,
       description: newDesc || null,
       active: true,
       order_index: categories.length
     })
+    if (!created) {
+      setError('No se pudo crear la categoría. Puede que el nombre ya exista.')
+      setSaving(false)
+      return
+    }
     setShowNew(false)
     setNewName('')
     setNewDesc('')
@@ -74,6 +97,12 @@ export default function AdminCategories() {
           + Nueva categoría
         </button>
       </div>
+
+      {error && (
+        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg font-sans text-sm mb-6">
+          {error}
+        </div>
+      )}
 
       {showNew && (
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
