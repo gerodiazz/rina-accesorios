@@ -9,6 +9,7 @@ const navItems = [
   { to: '/admin/modelos', label: 'Modelos de celular', icon: '📱' },
   { type: 'divider' as const },
   { to: '/admin/contenido', label: 'Contenido del Home', icon: '🏠' },
+  { to: '/admin/portada', label: 'Imagen de portada', icon: '🌅' },
   { to: '/admin/imagenes', label: 'Imágenes del sitio', icon: '🖼️' },
   { to: '/admin/faq', label: 'FAQ', icon: '❓' },
   { type: 'divider' as const },

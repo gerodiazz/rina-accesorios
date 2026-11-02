@@ -1,6 +1,9 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useContent } from '../../context/SiteContentContext'
+import { useHeroImage } from '../../hooks/useHeroImage'
+import { DEFAULT_HERO_IMAGE } from '../../services/heroImage'
 
 const stagger = {
   hidden: {},
@@ -26,6 +29,10 @@ const avatars = [
 
 export function HeroSection() {
   const { get } = useContent()
+  const { url } = useHeroImage()
+  // Si la foto subida no carga por algún motivo, se muestra la original
+  const [heroFailed, setHeroFailed] = useState(false)
+  const heroUrl = heroFailed ? DEFAULT_HERO_IMAGE : url
 
   return (
     <section
@@ -119,20 +126,40 @@ export function HeroSection() {
             className="order-1 md:order-2 flex justify-center md:justify-end"
           >
             <div className="relative">
-              <img
-                src="https://picsum.photos/seed/rina-hero/480/640"
-                alt="Funda personalizada de celular"
-                width={480}
-                height={640}
-                className="rounded-2xl object-cover"
-                style={{
-                  width: 'clamp(200px, 38vw, 400px)',
-                  aspectRatio: '3/4',
-                  transform: 'rotate(-3deg)',
-                  boxShadow: '0 40px 100px rgba(0,0,0,0.22)',
-                }}
-                loading="eager"
-              />
+              {heroUrl ? (
+                <img
+                  key={heroUrl}
+                  src={heroUrl}
+                  alt="Funda personalizada de celular"
+                  width={480}
+                  height={640}
+                  className="rounded-2xl object-cover"
+                  style={{
+                    width: 'clamp(200px, 38vw, 400px)',
+                    aspectRatio: '3/4',
+                    objectPosition: 'center',
+                    transform: 'rotate(-3deg)',
+                    boxShadow: '0 40px 100px rgba(0,0,0,0.22)',
+                    background: 'var(--color-blush-deep)',
+                  }}
+                  loading="eager"
+                  decoding="async"
+                  onError={() => setHeroFailed(true)}
+                />
+              ) : (
+                // Mismo tamaño que la foto mientras se consulta cuál mostrar (evita saltos)
+                <div
+                  className="rounded-2xl"
+                  style={{
+                    width: 'clamp(200px, 38vw, 400px)',
+                    aspectRatio: '3/4',
+                    transform: 'rotate(-3deg)',
+                    boxShadow: '0 40px 100px rgba(0,0,0,0.22)',
+                    background: 'var(--color-blush-deep)',
+                  }}
+                  aria-hidden
+                />
+              )}
 
               <motion.div
                 initial={{ opacity: 0, scale: 0.85, y: 10 }}

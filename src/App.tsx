@@ -20,6 +20,7 @@ import AdminCategories from './pages/admin/Categories'
 import AdminPhoneModels from './pages/admin/PhoneModels'
 import AdminContent from './pages/admin/Content'
 import AdminImages from './pages/admin/Images'
+import AdminHeroImage from './pages/admin/HeroImage'
 import AdminFaq from './pages/admin/Faq'
 import AdminSettings from './pages/admin/Settings'
 
@@ -49,6 +50,7 @@ export default function App() {
               <Route path="categorias" element={<AdminCategories />} />
               <Route path="modelos" element={<AdminPhoneModels />} />
               <Route path="contenido" element={<AdminContent />} />
+              <Route path="portada" element={<AdminHeroImage />} />
               <Route path="imagenes" element={<AdminImages />} />
               <Route path="faq" element={<AdminFaq />} />
               <Route path="configuracion" element={<AdminSettings />} />
