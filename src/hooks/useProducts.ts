@@ -3,14 +3,22 @@ import type { ProductWithRelations } from '../types/database'
 import { getProducts, getProductBySlug, getFeaturedProducts } from '../services/products'
 import { supabaseConfigured } from '../lib/supabase'
 import { products as localProducts, type Product as LocalProduct } from '../data/products'
+import { getLocalCategories } from './useCategories'
+
+const localCategories = getLocalCategories()
 
 function mapLocalToDb(product: LocalProduct): ProductWithRelations {
+  // Las fundas locales se asocian a su estilo; el resto, a su categoría
+  const category = product.category === 'fundas'
+    ? localCategories.find(c => c.name === product.style[0]) ?? null
+    : localCategories.find(c => c.slug === product.category) ?? null
+
   return {
     id: product.id,
     name: product.name,
     slug: product.id,
     description: product.description,
-    category_id: null,
+    category_id: category?.id ?? null,
     price_display: product.price ?? null,
     whatsapp_only: product.whatsappOnly ?? false,
     whatsapp_message: product.whatsappMessage ?? null,
@@ -18,7 +26,7 @@ function mapLocalToDb(product: LocalProduct): ProductWithRelations {
     featured: product.featured,
     order_index: 0,
     created_at: new Date().toISOString(),
-    category: null,
+    category,
     images: product.images.map((url, i) => ({
       id: `${product.id}-img-${i}`,
       product_id: product.id,

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Badge } from '../ui/Badge'
 import { buildWhatsAppConsultUrl } from '../../utils/whatsapp'
+import { formatPrice } from '../../utils/catalog'
 import type { Product } from '../../data/products'
 
 interface ProductCardProps {
@@ -11,8 +12,10 @@ export function ProductCard({ product }: ProductCardProps) {
   const visibleStyles = product.style.slice(0, 2)
   const extraStyles = product.style.length - visibleStyles.length
 
-  const isGiftCard = product.category === 'giftcard'
+  const isGiftCard = product.category === 'gift-card'
+  // Los productos personalizados (solo WhatsApp) no tienen precio fijo
   const isWhatsAppOnly = product.whatsappOnly
+  const price = isWhatsAppOnly ? null : formatPrice(product.price)
 
   const cardContent = (
     <>
@@ -73,13 +76,17 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
 
+        {price && (
+          <p className="font-sans font-medium text-base" style={{ color: 'var(--color-ink)' }}>
+            {price}
+          </p>
+        )}
+
         {isWhatsAppOnly && (
           <div className="mt-auto">
-            {product.price && (
-              <p className="font-sans text-xs mb-2" style={{ color: 'var(--color-ink-muted)' }}>
-                {product.price}
-              </p>
-            )}
+            <p className="font-sans text-xs mb-2" style={{ color: 'var(--color-ink-muted)' }}>
+              Precio a consultar
+            </p>
             <span
               className="inline-flex items-center gap-1.5 font-sans text-sm font-medium px-4 py-2 rounded-full transition-opacity hover:opacity-90"
               style={{ background: '#25D366', color: 'white' }}

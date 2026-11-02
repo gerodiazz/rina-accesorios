@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useCategories } from '../../hooks/useCategories'
 import { updateCategory, deleteCategory, createCategory } from '../../services/categories'
+import { isFundaStyleCategory } from '../../utils/catalog'
 
 export default function AdminCategories() {
   const { categories, refetch } = useCategories()
@@ -10,6 +11,7 @@ export default function AdminCategories() {
   const [showNew, setShowNew] = useState(false)
   const [newName, setNewName] = useState('')
   const [newDesc, setNewDesc] = useState('')
+  const [newIsFundaStyle, setNewIsFundaStyle] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -44,6 +46,16 @@ export default function AdminCategories() {
     refetch()
   }
 
+  const handleToggleFundaStyle = async (id: string, current: boolean) => {
+    setError(null)
+    const updated = await updateCategory(id, { is_funda_style: !current })
+    if (!updated) {
+      setError('No se pudo cambiar el tipo de la categoría. ¿Ya corriste sql/categories_funda_style.sql?')
+      return
+    }
+    refetch()
+  }
+
   const handleDelete = async (id: string) => {
     if (!confirm('¿Eliminar esta categoría?')) return
     setError(null)
@@ -64,6 +76,7 @@ export default function AdminCategories() {
       name: newName,
       slug,
       description: newDesc || null,
+      is_funda_style: newIsFundaStyle,
       active: true,
       order_index: categories.length
     })
@@ -75,6 +88,7 @@ export default function AdminCategories() {
     setShowNew(false)
     setNewName('')
     setNewDesc('')
+    setNewIsFundaStyle(false)
     setSaving(false)
     refetch()
   }
@@ -122,6 +136,17 @@ export default function AdminCategories() {
               placeholder="Descripción (opcional)"
               className="w-full px-4 py-2.5 rounded-lg border border-[#E5E2DC] font-sans"
             />
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={newIsFundaStyle}
+                onChange={e => setNewIsFundaStyle(e.target.checked)}
+                className="w-4 h-4 rounded border-[#E5E2DC] text-[#C9A96E] focus:ring-[#C9A96E]"
+              />
+              <span className="font-sans text-sm text-[#1A1A1A]">
+                Es un estilo de funda (aparece dentro del filtro "Fundas")
+              </span>
+            </label>
             <div className="flex gap-3">
               <button
                 onClick={handleCreateNew}
@@ -131,7 +156,7 @@ export default function AdminCategories() {
                 {saving ? 'Guardando...' : 'Crear'}
               </button>
               <button
-                onClick={() => { setShowNew(false); setNewName(''); setNewDesc('') }}
+                onClick={() => { setShowNew(false); setNewName(''); setNewDesc(''); setNewIsFundaStyle(false) }}
                 className="px-4 py-2 rounded-lg bg-[#F5F5F5] text-[#1A1A1A] font-sans text-sm"
               >
                 Cancelar
@@ -150,6 +175,9 @@ export default function AdminCategories() {
               </th>
               <th className="px-4 py-3 text-left font-sans text-xs font-medium text-[#6B6B6B] uppercase">
                 Descripción
+              </th>
+              <th className="px-4 py-3 text-center font-sans text-xs font-medium text-[#6B6B6B] uppercase">
+                Estilo de funda
               </th>
               <th className="px-4 py-3 text-center font-sans text-xs font-medium text-[#6B6B6B] uppercase">
                 Activo
@@ -185,6 +213,21 @@ export default function AdminCategories() {
                   ) : (
                     <span className="font-sans text-sm text-[#6B6B6B]">{cat.description || '—'}</span>
                   )}
+                </td>
+                <td className="px-4 py-3 text-center">
+                  <button
+                    onClick={() => handleToggleFundaStyle(cat.id, isFundaStyleCategory(cat))}
+                    className={`w-10 h-6 rounded-full relative transition-colors ${
+                      isFundaStyleCategory(cat) ? 'bg-[#C9A96E]' : 'bg-gray-300'
+                    }`}
+                    aria-label="Estilo de funda"
+                  >
+                    <span
+                      className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                        isFundaStyleCategory(cat) ? 'left-5' : 'left-1'
+                      }`}
+                    />
+                  </button>
                 </td>
                 <td className="px-4 py-3 text-center">
                   <button

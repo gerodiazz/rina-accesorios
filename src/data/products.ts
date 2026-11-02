@@ -1,4 +1,4 @@
-export type ProductCategory = 'fundas' | 'straps' | 'box' | 'llaveros' | 'giftcard'
+export type ProductCategory = 'fundas' | 'straps' | 'box' | 'llaveros' | 'gift-card'
 
 export interface Product {
   id: string
@@ -187,7 +187,7 @@ export const products: Product[] = [
     id: 'gift-card',
     name: 'Gift Card',
     description: 'Regalá la experiencia de elegir. La persona elige el monto y el diseño que más le guste.',
-    category: 'giftcard',
+    category: 'gift-card',
     style: [],
     compatibleModels: [],
     images: ['/mock/gift-card-01.jpg'],
@@ -218,7 +218,7 @@ export const categoryLabels: Record<ProductCategory, string> = {
   straps: 'Straps',
   box: 'Box',
   llaveros: 'Llaveros',
-  giftcard: 'Gift Card',
+  'gift-card': 'Gift Card',
 }
 
-export const allCategories: ProductCategory[] = ['fundas', 'straps', 'box', 'llaveros', 'giftcard']
+export const allCategories: ProductCategory[] = ['fundas', 'straps', 'box', 'llaveros', 'gift-card']

@@ -4,12 +4,13 @@ import { getCategories } from '../services/categories'
 import { supabaseConfigured } from '../lib/supabase'
 import { caseStyleOptions, categoryLabels, allCategories, type ProductCategory } from '../data/products'
 
-function getLocalCategories(): Category[] {
+export function getLocalCategories(): Category[] {
   const fundaCategories = caseStyleOptions.map((name, i) => ({
     id: `local-funda-${i}`,
     name,
     slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
     description: null,
+    is_funda_style: true,
     active: true,
     order_index: i,
     created_at: new Date().toISOString()
@@ -22,6 +23,7 @@ function getLocalCategories(): Category[] {
       name: categoryLabels[cat as ProductCategory],
       slug: cat,
       description: null,
+      is_funda_style: false,
       active: true,
       order_index: caseStyleOptions.length + i,
       created_at: new Date().toISOString()

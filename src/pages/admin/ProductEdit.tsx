@@ -341,7 +341,7 @@ export default function AdminProductEdit() {
                   onChange={e => setFormData(prev => ({ ...prev, whatsapp_only: e.target.checked }))}
                   className="w-4 h-4 rounded border-[#E5E2DC] text-[#C9A96E] focus:ring-[#C9A96E]"
                 />
-                <span className="font-sans text-sm text-[#1A1A1A]">Solo WhatsApp</span>
+                <span className="font-sans text-sm text-[#1A1A1A]">Personalizado (precio a consultar por WhatsApp)</span>
               </label>
             </div>
 

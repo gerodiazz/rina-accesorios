@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { useProducts } from '../hooks/useProducts'
 import { useCategories } from '../hooks/useCategories'
 import { ProductCard } from '../components/catalog/ProductCard'
-import type { Product as LocalProduct } from '../data/products'
+import { FUNDAS_FILTER, isFundaStyleCategory, toCardProduct } from '../utils/catalog'
 
 export default function Catalog() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -13,7 +13,6 @@ export default function Catalog() {
   const { products: dbProducts, loading: loadingProducts } = useProducts()
   const { categories, loading: loadingCategories } = useCategories()
 
-  const [activeCategoryId, setActiveCategoryId] = useState<string | 'all'>('all')
   const [activeStyles, setActiveStyles] = useState<string[]>([])
 
   // Categorías activas para los filtros
@@ -22,35 +21,35 @@ export default function Catalog() {
     [categories]
   )
 
-  // Set initial category from URL param
-  useEffect(() => {
-    if (categoryParam && categories.length > 0) {
-      const cat = categories.find(c => c.slug === categoryParam)
-      if (cat) {
-        setActiveCategoryId(cat.id)
-      }
-    }
-  }, [categoryParam, categories])
-
-  // Estilos de fundas (categorías que son subcategorías de fundas)
+  // Estilos de fundas (categorías marcadas como estilo de funda)
   const fundaStyleCategories = useMemo(() =>
-    activeCategories.filter(c =>
-      c.slug.includes('stickers') ||
-      c.slug.includes('dijes') ||
-      c.slug.includes('flores') ||
-      c.slug === 'series' ||
-      c.slug === 'artistas'
-    ),
+    activeCategories.filter(isFundaStyleCategory),
     [activeCategories]
   )
 
-  // Categorías principales para el filtro superior
+  // Categorías principales para el filtro superior: todo lo que no es funda
   const mainCategories = useMemo(() =>
-    activeCategories.filter(c =>
-      ['straps', 'box', 'llaveros', 'gift-card'].includes(c.slug)
-    ),
+    activeCategories.filter(c => !isFundaStyleCategory(c)),
     [activeCategories]
   )
+
+  // La URL (?categoria=) es la única fuente del filtro principal:
+  // 'all', 'fundas' o el id de una categoría principal.
+  const paramCategory = activeCategories.find(c => c.slug === categoryParam)
+  const activeCategoryId: string =
+    categoryParam === FUNDAS_FILTER || (paramCategory && isFundaStyleCategory(paramCategory))
+      ? FUNDAS_FILTER
+      : paramCategory?.id ?? 'all'
+
+  // Al cambiar de categoría se limpian los estilos; si la URL apunta a un
+  // estilo de funda, queda preseleccionado.
+  useEffect(() => {
+    setActiveStyles(paramCategory && isFundaStyleCategory(paramCategory) ? [paramCategory.id] : [])
+  }, [categoryParam, paramCategory])
+
+  const selectCategory = (slug: string | null) => {
+    setSearchParams(slug ? { categoria: slug } : {})
+  }
 
   const toggleStyle = (categoryId: string) => {
     setActiveStyles((current) =>
@@ -60,52 +59,25 @@ export default function Catalog() {
     )
   }
 
-  // Convertir productos de DB a formato local para ProductCard
-  const products: LocalProduct[] = useMemo(() =>
-    dbProducts
-      .filter(p => p.active)
-      .map(p => ({
-        id: p.slug,
-        name: p.name,
-        description: p.description ?? '',
-        category: p.category?.slug as LocalProduct['category'] ?? 'fundas',
-        style: p.category ? [p.category.name] : [],
-        compatibleModels: [],
-        images: p.images.map(img => img.url),
-        featured: p.featured,
-        whatsappOnly: p.whatsapp_only,
-        whatsappMessage: p.whatsapp_message ?? undefined,
-        price: p.price_display ?? undefined,
-      })),
-    [dbProducts]
-  )
-
   const filteredProducts = useMemo(() => {
-    let result = products
+    let result = dbProducts.filter(p => p.active)
 
-    // Filtrar por categoría principal
-    if (activeCategoryId !== 'all') {
-      const activeCat = categories.find(c => c.id === activeCategoryId)
-      if (activeCat) {
-        result = result.filter((p) => p.category === activeCat.slug)
-      }
+    // Filtrar por categoría principal (por id, no por nombre)
+    if (activeCategoryId === FUNDAS_FILTER) {
+      result = result.filter(p => p.category !== null && isFundaStyleCategory(p.category))
+    } else if (activeCategoryId !== 'all') {
+      result = result.filter(p => p.category_id === activeCategoryId)
     }
 
     // Filtrar por estilos (subcategorías de fundas)
     if (activeStyles.length > 0) {
-      const styleNames = activeStyles
-        .map(id => categories.find(c => c.id === id)?.name)
-        .filter(Boolean)
-      result = result.filter((p) =>
-        p.style.some((s) => styleNames.includes(s))
-      )
+      result = result.filter(p => p.category_id !== null && activeStyles.includes(p.category_id))
     }
 
-    return result
-  }, [activeCategoryId, activeStyles, products, categories])
+    return result.map(toCardProduct)
+  }, [activeCategoryId, activeStyles, dbProducts])
 
-  const showStyleFilters = activeCategoryId === 'all' ||
-    fundaStyleCategories.some(c => c.id === activeCategoryId)
+  const showStyleFilters = activeCategoryId === 'all' || activeCategoryId === FUNDAS_FILTER
 
   const loading = loadingProducts || loadingCategories
 
@@ -137,11 +109,7 @@ export default function Catalog() {
         {/* Category filters */}
         <div className="flex flex-wrap items-center justify-center gap-2.5 mb-6">
           <button
-            onClick={() => {
-              setActiveCategoryId('all')
-              setActiveStyles([])
-              setSearchParams({})
-            }}
+            onClick={() => selectCategory(null)}
             className="font-sans text-sm px-4 py-2 rounded-full border transition-all duration-200"
             style={
               activeCategoryId === 'all'
@@ -152,14 +120,10 @@ export default function Catalog() {
             Todo
           </button>
           <button
-            onClick={() => {
-              setActiveCategoryId('fundas')
-              setActiveStyles([])
-              setSearchParams({ categoria: 'fundas' })
-            }}
+            onClick={() => selectCategory(FUNDAS_FILTER)}
             className="font-sans text-sm px-4 py-2 rounded-full border transition-all duration-200"
             style={
-              activeCategoryId === 'fundas'
+              activeCategoryId === FUNDAS_FILTER
                 ? { background: 'var(--color-ink)', color: 'white', borderColor: 'var(--color-ink)' }
                 : { background: 'transparent', color: 'var(--color-ink)', borderColor: 'var(--color-border)' }
             }
@@ -169,11 +133,7 @@ export default function Catalog() {
           {mainCategories.map((cat) => (
             <button
               key={cat.id}
-              onClick={() => {
-                setActiveCategoryId(cat.id)
-                setActiveStyles([])
-                setSearchParams({ categoria: cat.slug })
-              }}
+              onClick={() => selectCategory(cat.slug)}
               className="font-sans text-sm px-4 py-2 rounded-full border transition-all duration-200"
               style={
                 activeCategoryId === cat.id
@@ -234,9 +194,8 @@ export default function Catalog() {
               Probá con otra combinación o{' '}
               <button
                 onClick={() => {
-                  setActiveCategoryId('all')
                   setActiveStyles([])
-                  setSearchParams({})
+                  selectCategory(null)
                 }}
                 className="underline hover:text-accent"
               >

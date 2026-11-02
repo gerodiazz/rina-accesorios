@@ -7,6 +7,7 @@ import { useCartStore } from '../store/cart'
 import { buildWhatsAppConsultUrl, CUSTOMIZE_MESSAGE } from '../utils/whatsapp'
 import { Badge } from '../components/ui/Badge'
 import { ProductCard } from '../components/catalog/ProductCard'
+import { formatPrice, toCardProduct } from '../utils/catalog'
 import type { Product as LocalProduct } from '../data/products'
 
 export default function ProductDetail() {
@@ -46,22 +47,10 @@ export default function ProductDetail() {
   }, [activeModels])
 
   // Convert DB product to local format for display
-  const product: LocalProduct | null = useMemo(() => {
-    if (!dbProduct) return null
-    return {
-      id: dbProduct.slug,
-      name: dbProduct.name,
-      description: dbProduct.description ?? '',
-      category: dbProduct.category?.slug as LocalProduct['category'] ?? 'fundas',
-      style: dbProduct.category ? [dbProduct.category.name] : [],
-      compatibleModels: [],
-      images: dbProduct.images.map(img => img.url),
-      featured: dbProduct.featured,
-      whatsappOnly: dbProduct.whatsapp_only,
-      whatsappMessage: dbProduct.whatsapp_message ?? undefined,
-      price: dbProduct.price_display ?? undefined,
-    }
-  }, [dbProduct])
+  const product: LocalProduct | null = useMemo(() =>
+    dbProduct ? toCardProduct(dbProduct) : null,
+    [dbProduct]
+  )
 
   // Related products
   const relatedProducts: LocalProduct[] = useMemo(() => {
@@ -74,19 +63,7 @@ export default function ProductDetail() {
         p.category_id === dbProduct.category_id
       )
       .slice(0, 4)
-      .map(p => ({
-        id: p.slug,
-        name: p.name,
-        description: p.description ?? '',
-        category: p.category?.slug as LocalProduct['category'] ?? 'fundas',
-        style: p.category ? [p.category.name] : [],
-        compatibleModels: [],
-        images: p.images.map(img => img.url),
-        featured: p.featured,
-        whatsappOnly: p.whatsapp_only,
-        whatsappMessage: p.whatsapp_message ?? undefined,
-        price: p.price_display ?? undefined,
-      }))
+      .map(toCardProduct)
   }, [dbProduct, allProducts])
 
   const loading = loadingProduct || loadingModels
@@ -119,6 +96,7 @@ export default function ProductDetail() {
   }
 
   const imageCount = Math.max(product.images.length, 1)
+  const price = formatPrice(product.price)
 
   const handleAddToCart = () => {
     if (!phoneModel) return
@@ -190,6 +168,12 @@ export default function ProductDetail() {
             <h1 className="font-display font-light text-4xl mb-3" style={{ color: 'var(--color-ink)' }}>
               {product.name}
             </h1>
+
+            {price && (
+              <p className="font-sans font-medium text-xl mb-4" style={{ color: 'var(--color-ink)' }}>
+                {price}
+              </p>
+            )}
 
             <div className="flex flex-wrap gap-2 mb-5">
               {product.style.map((s) => (

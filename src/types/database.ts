@@ -15,6 +15,7 @@ export interface Database {
           name: string
           slug: string
           description: string | null
+          is_funda_style: boolean
           active: boolean
           order_index: number
           created_at: string
@@ -24,6 +25,7 @@ export interface Database {
           name: string
           slug: string
           description?: string | null
+          is_funda_style?: boolean
           active?: boolean
           order_index?: number
           created_at?: string
@@ -33,6 +35,7 @@ export interface Database {
           name?: string
           slug?: string
           description?: string | null
+          is_funda_style?: boolean
           active?: boolean
           order_index?: number
           created_at?: string

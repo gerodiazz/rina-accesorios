@@ -7,23 +7,23 @@
 -- CATEGORÍAS
 -- =============================================
 
-INSERT INTO categories (name, slug, description, active, order_index) VALUES
-  ('Funda con stickers / fotos', 'stickers-fotos', 'Fundas decoradas con stickers y tus fotos favoritas', TRUE, 1),
-  ('Con stickers y deco', 'stickers-deco', 'Stickers combinados con decoraciones especiales', TRUE, 2),
-  ('Con stickers, dijes y deco', 'stickers-dijes-deco', 'La combinación completa: stickers, dijes y decoración', TRUE, 3),
-  ('Con dijes', 'dijes', 'Fundas elegantes con dijes decorativos', TRUE, 4),
-  ('Con dijes y deco', 'dijes-deco', 'Dijes combinados con decoración especial', TRUE, 5),
-  ('Con flores y foto', 'flores-foto', 'Flores naturales secas con tus fotos', TRUE, 6),
-  ('Con flores, foto y deco', 'flores-foto-deco', 'Flores, fotos y decoración combinadas', TRUE, 7),
-  ('Con flores y deco', 'flores-deco', 'Flores naturales con decoración elegante', TRUE, 8),
-  ('Con flores y dijes', 'flores-dijes', 'Flores naturales combinadas con dijes', TRUE, 9),
-  ('Con flores, dijes y deco', 'flores-dijes-deco', 'La combinación completa con flores', TRUE, 10),
-  ('Series', 'series', 'Fundas inspiradas en tus series favoritas', TRUE, 11),
-  ('Artistas', 'artistas', 'Fundas inspiradas en tus artistas favoritos', TRUE, 12),
-  ('Straps', 'straps', 'Correas y accesorios para celular', TRUE, 13),
-  ('Box', 'box', 'Cajas decoradas personalizadas para regalo', TRUE, 14),
-  ('Llaveros', 'llaveros', 'Llaveros personalizados únicos', TRUE, 15),
-  ('Gift Card', 'gift-card', 'Tarjetas de regalo para que elijan su diseño', TRUE, 16);
+INSERT INTO categories (name, slug, description, is_funda_style, active, order_index) VALUES
+  ('Funda con stickers / fotos', 'stickers-fotos', 'Fundas decoradas con stickers y tus fotos favoritas', TRUE, TRUE, 1),
+  ('Con stickers y deco', 'stickers-deco', 'Stickers combinados con decoraciones especiales', TRUE, TRUE, 2),
+  ('Con stickers, dijes y deco', 'stickers-dijes-deco', 'La combinación completa: stickers, dijes y decoración', TRUE, TRUE, 3),
+  ('Con dijes', 'dijes', 'Fundas elegantes con dijes decorativos', TRUE, TRUE, 4),
+  ('Con dijes y deco', 'dijes-deco', 'Dijes combinados con decoración especial', TRUE, TRUE, 5),
+  ('Con flores y foto', 'flores-foto', 'Flores naturales secas con tus fotos', TRUE, TRUE, 6),
+  ('Con flores, foto y deco', 'flores-foto-deco', 'Flores, fotos y decoración combinadas', TRUE, TRUE, 7),
+  ('Con flores y deco', 'flores-deco', 'Flores naturales con decoración elegante', TRUE, TRUE, 8),
+  ('Con flores y dijes', 'flores-dijes', 'Flores naturales combinadas con dijes', TRUE, TRUE, 9),
+  ('Con flores, dijes y deco', 'flores-dijes-deco', 'La combinación completa con flores', TRUE, TRUE, 10),
+  ('Series', 'series', 'Fundas inspiradas en tus series favoritas', TRUE, TRUE, 11),
+  ('Artistas', 'artistas', 'Fundas inspiradas en tus artistas favoritos', TRUE, TRUE, 12),
+  ('Straps', 'straps', 'Correas y accesorios para celular', FALSE, TRUE, 13),
+  ('Box', 'box', 'Cajas decoradas personalizadas para regalo', FALSE, TRUE, 14),
+  ('Llaveros', 'llaveros', 'Llaveros personalizados únicos', FALSE, TRUE, 15),
+  ('Gift Card', 'gift-card', 'Tarjetas de regalo para que elijan su diseño', FALSE, TRUE, 16);
 
 -- =============================================
 -- MODELOS DE CELULAR - iPhone

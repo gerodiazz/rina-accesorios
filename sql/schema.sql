@@ -16,6 +16,7 @@ CREATE TABLE categories (
   name TEXT NOT NULL,
   slug TEXT UNIQUE NOT NULL,
   description TEXT,
+  is_funda_style BOOLEAN NOT NULL DEFAULT FALSE,
   active BOOLEAN DEFAULT TRUE,
   order_index INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW()
